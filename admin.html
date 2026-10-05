@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>SUM5 · Касса</title>
+<style>
+:root{--bg:#f4f1ea;--fg:#1d2a24;--card:#fff;--acc:#f5b301;--mut:#6b7a72;--bad:#c62828;--ok:#1f7a4a}
+@media (prefers-color-scheme:dark){:root{--bg:#101a15;--fg:#eef3ef;--card:#1b2822;--mut:#9bb0a5;--bad:#ff6b6b;--ok:#5fd394}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.4}
+main{max-width:640px;margin:0 auto;padding:16px}
+h1{font-size:22px;margin:4px 0 2px}
+h2{font-size:17px;margin:0 0 8px}
+.sub{color:var(--mut);font-size:13px;margin:0 0 6px}
+section{background:var(--card);border-radius:14px;padding:14px;margin:12px 0}
+label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
+input,select,textarea{width:100%;font:inherit;font-size:15px;padding:10px;border-radius:10px;border:2px solid var(--mut);background:transparent;color:var(--fg)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc)}
+textarea{font:12px monospace;word-break:break-all;resize:vertical}
+select option{color:#222}
+button{font:inherit;font-weight:700;border:0;border-radius:10px;padding:11px 16px;background:var(--acc);color:#222;cursor:pointer}
+button.g{background:transparent;color:var(--fg);border:2px solid var(--mut)}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.row>*{flex:1 1 auto}
+.chk{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mut);margin-top:8px}
+.chk input{width:auto}
+.msg{font-size:13px;min-height:18px;margin-top:8px}
+.msg.bad{color:var(--bad);font-weight:700}.msg.ok{color:var(--ok);font-weight:700}
+.warn{border-left:4px solid var(--acc);padding:6px 10px;font-size:13px;margin:8px 0;background:color-mix(in srgb,var(--acc) 12%,transparent);border-radius:6px}
+.h{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px dashed var(--mut);font-size:13px}
+.h span:first-child{color:var(--mut);min-width:84px}
+code{font:12px monospace;word-break:break-all}
+</style>
+</head>
+<body>
+<main>
+<h1>🔐 SUM5 · Касса</h1>
+<p class="sub">Выдача подписанных промокодов. Секретный ключ нигде не хранится, если не отметить галочку.</p>
+
+<section>
+<h2>1. Ключ подписи</h2>
+<label for="pk">Секретный ключ (начинается с PRIV-)</label>
+<input id="pk" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="PRIV-…">
+<div class="chk"><input type="checkbox" id="rem"><label for="rem" style="margin:0">Запомнить на этом устройстве (на github.io не советую)</label></div>
+<div class="row"><button class="g" onclick="showPub()">Показать публичный ключ</button><button class="g" onclick="newKeys()">Создать новую пару ключей</button></div>
+<div class="msg" id="km"></div>
+<textarea id="kout" rows="6" readonly style="display:none"></textarea>
+<div class="warn">Первый запуск: создай пару, секретный ключ (PRIV-…) сохрани в менеджер паролей, а строку <code>pub:'…'</code> вставь в <code>index.html</code> в блок <code>DON</code>. Если сменишь ключи, все старые коды перестанут работать.</div>
+</section>
+
+<section>
+<h2>2. Выдать код</h2>
+<label for="kind">Что выдаём</label>
+<select id="kind" onchange="kindCh()"><option value="p">Баллы 💰</option><option value="t">Билеты ±0 🎟</option><option value="i">Предмет из магазина</option></select>
+<div id="vnum"><label for="val">Количество</label><input id="val" type="number" inputmode="numeric" min="1" value="500"></div>
+<div id="vitem" style="display:none"><label for="item">Предмет</label><select id="item"><option value="t1">Бордо (стол, t1)</option><option value="t2">Неон (стол, t2)</option><option value="t3">Золото (стол, t3)</option><option value="t4">Космос (стол, t4)</option><option value="b1">Красная (рубашка, b1)</option><option value="b2">Золотая (рубашка, b2)</option><option value="b3">Радуга (рубашка, b3)</option><option value="f1">Крем (лицо карт, f1)</option><option value="f2">Тёмные (лицо карт, f2)</option><option value="f3">Неон (лицо карт, f3)</option><option value="t5">Москва (стол, t5)</option><option value="t6">Терияки (стол, t6)</option><option value="b4">Терияки (рубашка, b4)</option><option value="n1">Блик (анимация, n1)</option><option value="n2">Звёзды (анимация, n2)</option><option value="n3">Пульс (анимация, n3)</option><option value="n4">Перелив (анимация, n4)</option><option value="n5">Лепестки (анимация, n5)</option><option value="a1">Крутой (аватар, a1)</option><option value="a2">Лис (аватар, a2)</option><option value="a3">Панда (аватар, a3)</option><option value="a4">Сова (аватар, a4)</option><option value="a5">Мишень (аватар, a5)</option><option value="a6">В огне (аватар, a6)</option><option value="a7">Король (аватар, a7)</option><option value="a8">Дракон (аватар, a8)</option><option value="a9">Ниндзя (аватар, a9)</option><option value="a10">Богач (аватар, a10)</option><option value="a11">Завсегдатай (аватар, a11)</option><option value="r1">Бронза (рамка, r1)</option><option value="r2">Серебро (рамка, r2)</option><option value="r3">Золото (рамка, r3)</option><option value="r4">Радуга (рамка, r4)</option><option value="r5">Неон (рамка, r5)</option><option value="r6">Алмаз (рамка, r6)</option><option value="r7">Сакура (рамка, r7)</option><option value="e1">Фейерверк (эффект, e1)</option><option value="e2">Золотой дождь (эффект, e2)</option><option value="e3">Сакура (эффект, e3)</option><option value="e4">Звёзды (эффект, e4)</option><option value="s1">8-бит (звуки, s1)</option><option value="s2">Мягкие (звуки, s2)</option><option value="s3">Казино (звуки, s3)</option><option value="s4">Кото (звуки, s4)</option></select></div>
+<label for="days">Срок действия, дней (0 = без срока)</label>
+<input id="days" type="number" inputmode="numeric" min="0" value="30">
+<label for="note">Заметка для себя (кому, за что; в код не попадает)</label>
+<input id="note" placeholder="например: Саша, донат 5 USDT">
+<div class="row"><button onclick="make()">Создать код</button></div>
+<div class="msg" id="mm"></div>
+<textarea id="cout" rows="5" readonly style="display:none"></textarea>
+<div class="row" id="cbtn" style="display:none"><button onclick="cp('cout')">Копировать код</button><button class="g" onclick="cpMsg()">Копировать с подсказкой</button></div>
+</section>
+
+<section>
+<h2>3. История (только на этом устройстве)</h2>
+<div id="hist"></div>
+<div class="row"><button class="g" onclick="clearHist()">Очистить историю</button></div>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id),te=new TextEncoder(),ALG={name:'ECDSA',namedCurve:'P-256'};
+const b64u=u=>btoa(String.fromCharCode(...u)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const unb=s=>{s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return Uint8Array.from(atob(s),c=>c.charCodeAt(0))};
+const pubOf=j=>{const r=new Uint8Array(65);r[0]=4;r.set(unb(j.x),1);r.set(unb(j.y),33);return b64u(r)};
+function msg(id,t,c){const e=$(id);e.textContent=t;e.className='msg'+(c?' '+c:'')}
+const ls={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},del:k=>{try{localStorage.removeItem(k)}catch(e){}}};
+async function newKeys(){
+ if($('pk').value&&!confirm('Новая пара сделает недействительными все коды, выданные старым ключом. Продолжить?'))return;
+ try{const k=await crypto.subtle.generateKey(ALG,true,['sign','verify']),j=await crypto.subtle.exportKey('jwk',k.privateKey);
+  const priv='PRIV-'+b64u(te.encode(JSON.stringify({kty:j.kty,crv:j.crv,x:j.x,y:j.y,d:j.d})));
+  $('pk').value=priv;$('pk').type='text';
+  const o=$('kout');o.style.display='block';o.value='СЕКРЕТНЫЙ КЛЮЧ (сохрани, никому не показывай):\n'+priv+'\n\nДЛЯ index.html (вставь в DON):\npub:\''+pubOf(j)+'\'';
+  msg('km','Пара создана. Сохрани секретный ключ прямо сейчас!','ok')}
+ catch(e){msg('km','Не удалось создать ключи: '+e.message,'bad')}}
+async function readKey(){
+ const t=$('pk').value.trim();if(!/^PRIV-[A-Za-z0-9_-]+$/.test(t))throw new Error('Вставь секретный ключ (PRIV-…)');
+ const j=JSON.parse(new TextDecoder().decode(unb(t.slice(5))));
+ const key=await crypto.subtle.importKey('jwk',j,ALG,false,['sign']);
+ if($('rem').checked)ls.set('sum5_admin_pk',t);else ls.del('sum5_admin_pk');
+ return{key,pub:pubOf(j)}}
+async function showPub(){try{const{pub}=await readKey(),o=$('kout');o.style.display='block';o.value='Публичный ключ (должен совпадать с тем, что в index.html):\npub:\''+pub+'\'';msg('km','Ключ прочитан','ok')}catch(e){msg('km',e.message||'Ключ не подошёл','bad')}}
+function rid(){const a=new Uint8Array(6);crypto.getRandomValues(a);return[...a].map(x=>(x%36).toString(36)).join('')}
+async function makeCode(kind,val,days){
+ const{key}=await readKey(),d=Math.floor(Date.now()/864e5),exp=days?d+days:0,id=rid(),pl=b64u(te.encode([id,kind,val,exp].join('|'))),
+  sig=b64u(new Uint8Array(await crypto.subtle.sign({name:'ECDSA',hash:'SHA-256'},key,te.encode(pl))));
+ return{id,exp,code:'GIFT-'+pl+'.'+sig}}
+function kindCh(){const k=$('kind').value;$('vnum').style.display=k=='i'?'none':'block';$('vitem').style.display=k=='i'?'block':'none';$('val').max=k=='t'?100:1000000;$('val').value=k=='t'?1:500}
+async function make(){
+ try{const k=$('kind').value,days=Math.floor(+$('days').value||0);if(days<0||days>3650)throw new Error('Срок: от 0 до 3650 дней');
+  let v;if(k=='i')v=$('item').value;else{v=Math.floor(+$('val').value);const mx=k=='t'?100:1000000;if(!(v>=1&&v<=mx))throw new Error('Количество: от 1 до '+mx)}
+  const r=await makeCode(k,v,days),o=$('cout');o.style.display='block';$('cbtn').style.display='flex';o.value=r.code;o.select();
+  const h=JSON.parse(ls.get('sum5_admin_hist')||'[]');h.unshift({t:Date.now(),id:r.id,k,v,e:r.exp,n:$('note').value.slice(0,60)});h.length=Math.min(h.length,100);ls.set('sum5_admin_hist',JSON.stringify(h));renderHist();
+  msg('mm','Код создан. Отправь его игроку.','ok')}
+ catch(e){msg('mm',e.message||'Ошибка','bad')}}
+function cp(id){const e=$(id);e.select();try{navigator.clipboard.writeText(e.value).then(()=>msg('mm','Скопировано ✅','ok'),()=>{document.execCommand('copy');msg('mm','Скопировано ✅','ok')})}catch(x){document.execCommand('copy');msg('mm','Скопировано ✅','ok')}}
+function cpMsg(){const t='Твой код для SUM5. Открой игру → ☰ → Настройки → Промокод, вставь и нажми «Применить»:\n'+$('cout').value;try{navigator.clipboard.writeText(t).then(()=>msg('mm','Скопировано вместе с подсказкой ✅','ok'))}catch(e){msg('mm','Не удалось скопировать, скопируй код вручную','bad')}}
+const KN={p:'💰',t:'🎟',i:'🎁'};
+function renderHist(){const h=JSON.parse(ls.get('sum5_admin_hist')||'[]'),p=n=>String(n).padStart(2,'0');
+ $('hist').innerHTML=h.length?h.map(r=>{const d=new Date(r.t);return`<div class="h"><span>${p(d.getDate())}.${p(d.getMonth()+1)} ${p(d.getHours())}:${p(d.getMinutes())}</span><span>${KN[r.k]||''} ${String(r.v).replace(/[<>&]/g,'')}${r.n?' · '+r.n.replace(/[<>&]/g,''):''}</span><code>${r.id}</code></div>`}).join(''):'<p class="sub">Пока пусто</p>'}
+function clearHist(){if(confirm('Очистить историю на этом устройстве?')){ls.del('sum5_admin_hist');renderHist()}}
+{const t=ls.get('sum5_admin_pk');if(t){$('pk').value=t;$('rem').checked=true}}
+if(!(window.crypto&&crypto.subtle))msg('km','Этот браузер не поддерживает WebCrypto: открой страницу по https или в современном браузере','bad');
+renderHist();
+</script>
+</body>
+</html>
