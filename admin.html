@@ -40,16 +40,27 @@ code{font:12px monospace;word-break:break-all}
 <p class="sub">Выдача подписанных промокодов. Секретный ключ нигде не хранится, если не отметить галочку.</p>
 
 <section>
-<h2>1. Ключ подписи</h2>
+<h2>1. Вход</h2>
+<div id="lin">
+<form id="lf" onsubmit="event.preventDefault();login();return false" autocomplete="off">
 <label for="pk">Секретный ключ (начинается с PRIV-)</label>
-<input id="pk" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="PRIV-…">
+<div style="display:flex;gap:8px"><input id="pk" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" placeholder="PRIV-…" style="flex:1;min-width:0"><button type="button" class="g" id="eye" onclick="eye()" aria-label="Показать ключ">👁</button></div>
 <div class="chk"><input type="checkbox" id="rem"><label for="rem" style="margin:0">Запомнить на этом устройстве (на github.io не советую)</label></div>
-<div class="row"><button class="g" onclick="showPub()">Показать публичный ключ</button><button class="g" onclick="newKeys()">Создать новую пару ключей</button></div>
+<div class="row"><button type="button" class="g" onclick="pasteKey()">📋 Вставить</button><button type="submit" id="lbtn">🔓 Войти</button></div>
+</form>
+<div class="row"><button type="button" class="g" onclick="newKeys()">Создать новую пару ключей (первый запуск)</button></div>
+</div>
+<div id="lout" style="display:none">
+<p class="msg ok" style="margin:0">✅ Вы вошли</p>
+<p class="sub" style="margin:4px 0">Публичный ключ: <code id="pubs"></code></p>
+<div class="row"><button class="g" onclick="showPub()">Показать публичный ключ</button><button class="g" onclick="logout()">🚪 Выйти</button></div>
+</div>
 <div class="msg" id="km"></div>
 <textarea id="kout" rows="6" readonly style="display:none"></textarea>
 <div class="warn">Первый запуск: создай пару, секретный ключ (PRIV-…) сохрани в менеджер паролей, а строку <code>pub:'…'</code> вставь в <code>index.html</code> в блок <code>DON</code>. Если сменишь ключи, все старые коды перестанут работать.</div>
 </section>
 
+<div id="app" style="display:none">
 <section>
 <h2>2. Выдать код</h2>
 <label for="kind">Что выдаём</label>
@@ -71,6 +82,7 @@ code{font:12px monospace;word-break:break-all}
 <div id="hist"></div>
 <div class="row"><button class="g" onclick="clearHist()">Очистить историю</button></div>
 </section>
+</div>
 </main>
 <script>
 const $=id=>document.getElementById(id),te=new TextEncoder(),ALG={name:'ECDSA',namedCurve:'P-256'};
@@ -85,7 +97,7 @@ async function newKeys(){
   const priv='PRIV-'+b64u(te.encode(JSON.stringify({kty:j.kty,crv:j.crv,x:j.x,y:j.y,d:j.d})));
   $('pk').value=priv;$('pk').type='text';
   const o=$('kout');o.style.display='block';o.value='СЕКРЕТНЫЙ КЛЮЧ (сохрани, никому не показывай):\n'+priv+'\n\nДЛЯ index.html (вставь в DON):\npub:\''+pubOf(j)+'\'';
-  msg('km','Пара создана. Сохрани секретный ключ прямо сейчас!','ok')}
+  msg('km','Пара создана. Сохрани секретный ключ прямо сейчас! Ты уже вошёл.','ok');setIn(true,pubOf(j))}
  catch(e){msg('km','Не удалось создать ключи: '+e.message,'bad')}}
 async function readKey(){
  const t=$('pk').value.trim();if(!/^PRIV-[A-Za-z0-9_-]+$/.test(t))throw new Error('Вставь секретный ключ (PRIV-…)');
@@ -93,6 +105,16 @@ async function readKey(){
  const key=await crypto.subtle.importKey('jwk',j,ALG,false,['sign']);
  if($('rem').checked)ls.set('sum5_admin_pk',t);else ls.del('sum5_admin_pk');
  return{key,pub:pubOf(j)}}
+const isOn=()=>$('lout').style.display!='none';
+function setIn(on,pub){$('lin').style.display=on?'none':'block';$('lout').style.display=on?'block':'none';$('app').style.display=on?'block':'none';if(on)$('pubs').textContent=pub.slice(0,10)+'…'+pub.slice(-6)}
+async function login(){
+ const b=$('lbtn');b.disabled=true;
+ try{const{pub}=await readKey();setIn(true,pub);msg('km','','');}
+ catch(e){msg('km',e.message&&/Вставь/.test(e.message)?e.message:'Ключ не подошёл: проверь, что скопирован целиком (PRIV-… до конца)','bad')}
+ b.disabled=false}
+function logout(){$('pk').value='';$('pk').type='password';ls.del('sum5_admin_pk');$('rem').checked=false;$('cout').value='';$('cout').style.display='none';$('cbtn').style.display='none';msg('mm','','');setIn(false);msg('km','Вы вышли','');}
+function eye(){const e=$('pk');e.type=e.type=='password'?'text':'password'}
+async function pasteKey(){try{const t=await navigator.clipboard.readText();$('pk').value=t.trim();msg('km','Вставлено, нажми «Войти»','ok')}catch(e){msg('km','Браузер не дал доступ к буферу: нажми в поле и вставь вручную','bad')}}
 async function showPub(){try{const{pub}=await readKey(),o=$('kout');o.style.display='block';o.value='Публичный ключ (должен совпадать с тем, что в index.html):\npub:\''+pub+'\'';msg('km','Ключ прочитан','ok')}catch(e){msg('km',e.message||'Ключ не подошёл','bad')}}
 function rid(){const a=new Uint8Array(6);crypto.getRandomValues(a);return[...a].map(x=>(x%36).toString(36)).join('')}
 async function makeCode(kind,val,days){
@@ -113,7 +135,7 @@ const KN={p:'💰',t:'🎟',i:'🎁'};
 function renderHist(){const h=JSON.parse(ls.get('sum5_admin_hist')||'[]'),p=n=>String(n).padStart(2,'0');
  $('hist').innerHTML=h.length?h.map(r=>{const d=new Date(r.t);return`<div class="h"><span>${p(d.getDate())}.${p(d.getMonth()+1)} ${p(d.getHours())}:${p(d.getMinutes())}</span><span>${KN[r.k]||''} ${String(r.v).replace(/[<>&]/g,'')}${r.n?' · '+r.n.replace(/[<>&]/g,''):''}</span><code>${r.id}</code></div>`}).join(''):'<p class="sub">Пока пусто</p>'}
 function clearHist(){if(confirm('Очистить историю на этом устройстве?')){ls.del('sum5_admin_hist');renderHist()}}
-{const t=ls.get('sum5_admin_pk');if(t){$('pk').value=t;$('rem').checked=true}}
+{const t=ls.get('sum5_admin_pk');if(t){$('pk').value=t;$('rem').checked=true;login()}}
 if(!(window.crypto&&crypto.subtle))msg('km','Этот браузер не поддерживает WebCrypto: открой страницу по https или в современном браузере','bad');
 renderHist();
 </script>
