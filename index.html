@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>SUM5</title>
 <meta name="theme-color" content="#0f3d28">
 <meta name="application-name" content="SUM5">
@@ -52,7 +52,7 @@ h1{font-size:21px;margin:4px 0}
 .dd.done{opacity:.45}.dd.cur{background:var(--acc);color:#222}.dd.cur b{color:#222}
 .ov textarea{width:100%;font:12px monospace;border-radius:10px;padding:8px;background:transparent;color:var(--fg);border:2px solid var(--mut);word-break:break-all}
 .chip{background:var(--card);opacity:.75}.chip.on{background:var(--acc);opacity:1}button:disabled{opacity:.3;cursor:not-allowed}
-#toast{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translate(-50%,-200%);background:#222;color:#fff;padding:10px 16px;border-radius:12px;z-index:70;transition:transform .4s;border:2px solid var(--acc)}#toast.on{transform:translate(-50%,0)}
+#toast{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translate(-50%,calc(-100% - 60px - env(safe-area-inset-top,0px)));opacity:0;visibility:hidden;pointer-events:none;background:#222;color:#fff;padding:10px 16px;border-radius:12px;z-index:70;transition:transform .4s,opacity .3s,visibility 0s .4s;border:2px solid var(--acc)}#toast.on{transform:translate(-50%,0);opacity:1;visibility:visible;transition:transform .4s,opacity .2s,visibility 0s}
 .shake{animation:sh .5s}@keyframes sh{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
 .panel{margin-top:14px;background:color-mix(in srgb,var(--fg) 7%,transparent);border-radius:14px;padding:14px}
 .row{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
@@ -161,7 +161,7 @@ body[data-anim=n5] .face.back::before,.pvb[data-anim=n5]::before{background:radi
 
 a.dl{display:block;text-align:center;text-decoration:none;font-weight:700;background:var(--acc);color:#222;border-radius:10px;padding:10px 12px;line-height:1.2}
 a.dl small{font-weight:600;opacity:.8}
-.pcin{flex:1;min-width:0;font:13px monospace;border-radius:10px;padding:10px;background:transparent;color:var(--fg);border:2px solid var(--mut)}
+.pcin{flex:1;min-width:0;font:16px monospace;border-radius:10px;padding:10px;background:transparent;color:var(--fg);border:2px solid var(--mut)}
 
 .avw{position:relative;display:inline-flex;flex:none;vertical-align:middle}
 .avw .sup{position:absolute;right:-5px;bottom:-4px;font-size:13px;line-height:1;filter:drop-shadow(0 1px 1px #0008);z-index:2}
@@ -215,7 +215,9 @@ body[data-anim=n7] .face.back::before,.pvb[data-anim=n7]::before{background:radi
 @keyframes wgr{from{transform:scaleY(.25)}to{transform:scaleY(1)}}
 @media (prefers-reduced-motion:reduce){.wbr i{animation:none}}
 
-html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
+html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+*{touch-action:manipulation}
+input,textarea,select{font-size:16px}
 .wvs{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:8px 0 2px}
 .wvs button{padding:6px 12px;font-size:13px;background:transparent;color:var(--fg);border:2px solid var(--mut);opacity:.7}
 .wvs button.on{background:var(--acc);color:#222;border-color:var(--acc);opacity:1}
@@ -247,6 +249,7 @@ html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
 <button class="di" onclick="dc(openInfo)">ℹ️ Как играть</button>
 <button class="di" onclick="dc(openWN)">✨ Что нового<span class="n" id="bwn"></span></button>
 <button class="di" onclick="dc(openSet)">⚙️ Настройки</button>
+<button class="di" onclick="dc(openDon)">💝 Поддержка и промокод</button>
 <button class="di" onclick="dc(openInst)">📲 На главный экран</button>
 <button class="di" id="fb" onclick="fs()">⛶ Полный экран</button></div></div>
 <div class="ov" id="ov" onclick="if(event.target==this)this.classList.remove('on')"><div class="modal">
@@ -272,6 +275,7 @@ html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
 <div class="row" style="margin-top:12px"><button onclick="$('ov4').classList.remove('on');tutOpen()">Пройти обучение заново</button></div></div></div>
 <div class="ov" id="ov10" onclick="if(event.target==this)this.classList.remove('on')"><div class="modal"><div class="top"><h2 style="margin:0">Настройки</h2><button class="sm ghost" onclick="$('ov10').classList.remove('on')">✕</button></div><div id="set"></div></div></div>
 <div class="ov" id="ov11" onclick="if(event.target==this)this.classList.remove('on')"><div class="modal"><div class="top"><h2 style="margin:0">Коллекции</h2><button class="sm ghost" onclick="$('ov11').classList.remove('on')">✕</button></div><p class="sub" style="margin:0">Собери все предметы набора и получи награду. Она придёт сама.</p><div id="cl"></div></div></div>
+<div class="ov" id="ov20" onclick="if(event.target==this)this.classList.remove('on')"><div class="modal"><div class="top"><h2 style="margin:0">Поддержка и промокод</h2><button class="sm ghost" onclick="$('ov20').classList.remove('on')">✕</button></div><div id="don"></div></div></div>
 <div class="ov" id="ov12" onclick="if(event.target==this)this.classList.remove('on')"><div class="modal"><div class="top"><h2 style="margin:0">Сезон</h2><button class="sm ghost" onclick="$('ov12').classList.remove('on')">✕</button></div><div id="sn"></div></div></div>
 <div class="ov" id="ov13" onclick="if(event.target==this)this.classList.remove('on')"><div class="modal ins"><div class="top"><h2 style="margin:0">На главный экран</h2><button class="sm ghost" onclick="$('ov13').classList.remove('on')">✕</button></div><div id="inst"></div></div></div>
 <div id="wn"></div>
@@ -285,7 +289,7 @@ const $=id=>document.getElementById(id);
    pub  - публичный ключ из admin.html (строка после «pub:»)
    tg   - твой Telegram-логин без @ (для кнопки «Я оплатил(а)»)
    items - кнопки оплаты: n название, p цена, url ссылка вида https://t.me/... (пустые не показываются) */
-const DON={pub:'BDGQ774Yc8qr-BWpMytZRYTGvJPo0RVtYXDbkKG5ilD-bFZHoxa0Spkxq1d0XrRkX9iKBUlJdzMmSAyx9vfYsKg',tg:'yotonick',items:[
+const DON={pub:'BKOZJ2vn584WPxkKleaS7U14Ymn7LH87JIujqW0mQHZNEGegiaywD6G5FTBQDIJQmJ6uYzflCfQ02SIVNQ2Hu-Y',tg:'yotonick',items:[
 {n:'💰 100 баллов',p:'0.22 USDT',url:'https://t.me/send?start=IV0NzbG8upKj'},
 {n:'💰 250 баллов',p:'0.38 USDT',url:'https://t.me/send?start=IVMXGCQdBAxP'},
 {n:'💰 500 баллов',p:'0.69 USDT',url:'https://t.me/send?start=IV9GQ0Pq1SCY'},
@@ -418,7 +422,7 @@ function draw(){upd();
  else if(phase==2)p.innerHTML=`<p class="msg">Сумма двух карт: <b>${sum(2)}</b>. Последний шанс!</p>${stepper()}${mk('Зафиксировать окончательно')}`;
  else if(phase==3)p.innerHTML=`<p class="msg">Прогноз: <b>${guess}</b> (±${tol})${bet?' · ставка 🪙'+bet:''}. На столе: <b>${sum(shown)}</b>.</p><div class="row"><button onclick="flip()">Открыть карту ${shown+1}</button></div>`;
  else if(phase==5)p.innerHTML=`<p class="msg">Считаем…</p>`;
- else{const r=result;p.innerHTML=`<div class="res">${r.ok?(r.d==0?'🎯 ТОЧНО В ЯБЛОЧКО!':'🎉 Победа!'):'😵 Мимо'}</div><p class="msg">Сумма: <b>${r.t}</b> · прогноз: <b>${guess}</b> · разница: ${r.d}</p><p class="hint" style="margin:0 0 6px">⭐ +${r.xp} опыта${r.lv.length?` · 🆙 Уровень ${r.lv[r.lv.length-1]}`:''}</p>${r.notes.map(n=>`<p class="hint" style="margin:0 0 6px">${n}</p>`).join('')}${r.ok?`<ul class="bd">${r.items.map(x=>`<li><span>${x[0]}</span><b>${x[1]<0?'':'+'}${x[1]}</b></li>`).join('')}</ul><div class="tot" id="tot">+0</div>`:`<p class="msg">${r.refund?`🛡 Щит вернул ставку 🪙${r.bet}`:r.bet?`Ставка 🪙${r.bet} сгорела 🔥`:'Баллов нет, в следующий раз повезёт!'}</p>`}<div class="row"><button onclick="start()">Играть ещё</button><button class="ghost" onclick="shareResult()">📤 Поделиться</button></div>`}
+ else{const r=result;p.innerHTML=`<div class="res">${r.ok?(r.d==0?'🎯 ТОЧНО В ЯБЛОЧКО!':'🎉 Победа!'):'😵 Мимо'}</div><p class="msg">Сумма: <b>${r.t}</b> · прогноз: <b>${guess}</b> · разница: ${r.d}</p><p class="hint" style="margin:0 0 6px">⭐ +${r.xp} опыта${r.lv.length?` · 🆙 Уровень ${r.lv[r.lv.length-1]}`:''}</p>${r.notes.map(n=>`<p class="hint" style="margin:0 0 6px">${n}</p>`).join('')}${r.ok?`<ul class="bd">${r.items.map(x=>`<li><span>${x[0]}</span><b>${x[1]<0?'':'+'}${x[1]}</b></li>`).join('')}</ul><div class="tot" id="tot">+0</div>`:`<p class="msg">${r.refund?`🛡 Щит вернул ставку 🪙${r.bet}`:r.bet?`Ставка 🪙${r.bet} сгорела 🔥`:'Баллов нет, в следующий раз повезёт!'}</p>`}<div class="row"><button onclick="start()">Играть ещё</button>${r.ok?'<button class="ghost" onclick="shareResult()">📤 Поделиться</button>':''}</div>`}
  renderLvl();renderBadges();renderAv();$('pts').textContent='💰 '+S.pts;$('s1').textContent=`Игр: ${S.games} · Побед: ${S.wins}`;$('s2').textContent=`Серия: ${streak} · Рекорд: ${S.best}`;
  const g=$('g');if(g&&!tutOn&&!menuOn&&matchMedia('(pointer:fine)').matches){g.focus();g.select()}}
 function hint(m,bad){const h=$('hint');if(!h)return;const[mn,mx]=range();h.textContent=m||`Допустимо: ${mn}–${mx}`;h.classList.toggle('bad',!!bad);if(bad){snd('err');const g=$('g');g.classList.remove('shake');void g.offsetWidth;g.classList.add('shake')}}
@@ -656,7 +660,7 @@ const WNS=[
 {n:'2.1',t:'Москва и Терияки',d:'Новые столы и целые наборы в одном стиле: ночная Москва и японский закат.',bg:'linear-gradient(160deg,#3b1327,#150e2e)',v:()=>wd('🌸',15,0)+wd('🌸',48,1.4)+wd('❄️',72,.6,5)+wd('🌸',86,2.2)+`<span class="wbob" style="font-size:54px">🏛</span><span class="wbob" style="font-size:54px;--d:.5s">🎌</span>`},
 {n:'2.1',t:'Коллекции',d:'Собери весь набор и получи 💰 и редкий аватар. Прогресс в меню «Коллекции».',bg:'linear-gradient(160deg,#4a3a10,#1c1505)',v:()=>`<div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:12px"><div style="display:flex;gap:14px;font-size:38px">${['🎌','🏛','💜','🥇'].map((e,i)=>`<span class="wbob" style="--d:${i*.25}s">${e}</span>`).join('')}</div><div class="wpg"><i></i></div><span class="wtag">🎁 награда за полный комплект</span></div>`},
 {n:'2.1',t:'Новая экономика',d:'Взнос за раунд 🪙8, награды вдвое меньше, цены выше. Зато играть интереснее, а не «жать и копить».',bg:'linear-gradient(160deg,#1c3a2a,#08150e)',v:()=>wd('🪙',10,0)+wd('🪙',30,1,3.4)+wd('🪙',55,.4,4.2)+wd('🪙',78,1.8,3.6)+wd('🪙',90,.9,4.4)+'<span class="wtag" style="font-size:15px">⚖️ Меньше фарма, больше мастерства</span>'},
-{n:'2.1',t:'Поддержка и промокоды',d:'Хочешь поддержать автора? ☰ → Настройки. Там же поле для промокода и особые предметы «Меценат».',bg:'linear-gradient(160deg,#4a1a3a,#190a14)',v:()=>wf('💖',20,0,4)+wf('💖',50,1.2,5)+wf('💖',80,.6,4.4)+`<span class="wpul" style="font-size:64px">💝</span>`}];
+{n:'2.1',t:'Поддержка и промокоды',d:'Хочешь поддержать автора? ☰ → Поддержка и промокод. Там же поле для промокода и особые предметы «Меценат».',bg:'linear-gradient(160deg,#4a1a3a,#190a14)',v:()=>wf('💖',20,0,4)+wf('💖',50,1.2,5)+wf('💖',80,.6,4.4)+`<span class="wpul" style="font-size:64px">💝</span>`}];
 const WV=[...new Set(WNS.map(x=>x.n))].sort().reverse(),VN={'2.2':'Сезоны и график','2.1':'Косметика, коллекции, донат'};
 let wi=0,wv=WV[0],WL=WNS;
 function wnSel(v){wv=v;WL=WNS.filter(x=>x.n==v);wi=0}
@@ -697,8 +701,10 @@ function openColl(){$('ov11').classList.add('on');renderColl()}
 function renderColl(){$('cl').innerHTML=COLL.map(c=>{const have=c.items.filter(x=>S.owned.includes(x)).length,done=S.cg.includes(c.id),rw=IT(c.rw);return`<div class="cl ${done?'done':''}"><h3><span>${c.e} ${c.n}</span><span>${have}/${c.items.length}</span></h3><div class="pb"><i style="width:${100*have/c.items.length}%"></i></div><div class="ch">${c.items.map(x=>{const i=IT(x);return`<button class="${S.owned.includes(x)?'y':''}" onclick="$('ov11').classList.remove('on');openShop('${i.type}')">${S.owned.includes(x)?'✓':'○'} ${TI[i.type]} ${i.name}</button>`}).join('')}</div><p>${done?'✅ Награда получена: ':'🎁 Награда: '}<b>💰${c.pts}</b> + аватар ${rw.em} «${rw.name}»</p></div>`}).join('')}
 function collBadge(){const n=COLL.filter(c=>!S.cg.includes(c.id)&&c.items.filter(x=>S.owned.includes(x)).length>=c.items.length-1).length;$('bcl').textContent=n?'!':''}
 function applyTheme(){const r=document.documentElement;if(S.theme=='light'||S.theme=='dark')r.setAttribute('data-theme',S.theme);else r.removeAttribute('data-theme')}
+function openDon(){$('ov20').classList.add('on');renderDon()}
+function renderDon(){$('don').innerHTML=donHtml()||'<p class="msg">Пока здесь пусто.</p>'}
 function openSet(){$('ov10').classList.add('on');renderSet()}
-function renderSet(){$('set').innerHTML=`<h3>Звук</h3><div class="setr"><span>${S.snd?'🔊 Включён':'🔇 Выключен'}</span><button class="sm ${S.snd?'ghost':''}" onclick="togSnd()">${S.snd?'Выключить':'Включить'}</button></div><div class="setr"><span>🔈</span><input type="range" min="0" max="100" step="5" value="${S.vol}" style="flex:1" oninput="setVol(this.value)" onchange="snd('win')"><b id="vl" style="min-width:42px;text-align:right">${S.vol}%</b></div><h3>Тема</h3><div class="seg row">${[['auto','Авто'],['light','Светлая'],['dark','Тёмная']].map(([k,n])=>`<button class="${S.theme==k?'on':''}" onclick="setTheme('${k}')">${n}</button>`).join('')}</div>`;$('set').insertAdjacentHTML('beforeend','<h3>Приложение</h3><div class="row"><button class="sm ghost" onclick="$(\'ov10\').classList.remove(\'on\');openInst()">📲 Добавить на главный экран</button></div>'+donHtml())}
+function renderSet(){$('set').innerHTML=`<h3>Звук</h3><div class="setr"><span>${S.snd?'🔊 Включён':'🔇 Выключен'}</span><button class="sm ${S.snd?'ghost':''}" onclick="togSnd()">${S.snd?'Выключить':'Включить'}</button></div><div class="setr"><span>🔈</span><input type="range" min="0" max="100" step="5" value="${S.vol}" style="flex:1" oninput="setVol(this.value)" onchange="snd('win')"><b id="vl" style="min-width:42px;text-align:right">${S.vol}%</b></div><h3>Тема</h3><div class="seg row">${[['auto','Авто'],['light','Светлая'],['dark','Тёмная']].map(([k,n])=>`<button class="${S.theme==k?'on':''}" onclick="setTheme('${k}')">${n}</button>`).join('')}</div>`;}
 let pmsg='',pbad=0;
 const b64d=t=>{t=t.replace(/-/g,'+').replace(/_/g,'/');while(t.length%4)t+='=';return Uint8Array.from(atob(t),c=>c.charCodeAt(0))};
 function donHtml(){let h='';const L=DON.items.filter(x=>/^https:\/\/t\.me\//.test(x.url||'')),tgOk=/^[A-Za-z0-9_]{4,32}$/.test(DON.tg||'');
@@ -706,7 +712,7 @@ function donHtml(){let h='';const L=DON.items.filter(x=>/^https:\/\/t\.me\//.tes
  if(DON.pub)h+=`<h3>🎁 Промокод</h3><div class="setr"><input id="pc" class="pcin" placeholder="GIFT-…" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="sm" onclick="redeem($('pc').value)">Применить</button></div><div class="hint ${pbad?'bad':''}">${pmsg}</div>`;
  return h}
 function donPaid(){const t=`Оплатил(а) в SUM5. Мой ID: ${S.pid}, уровень ${lvInfo(S.xp).L}. Что купил(а): `;try{navigator.clipboard.writeText(t)}catch(e){}notify('📋 Текст скопирован, вставь его в чат с автором');if(/^[A-Za-z0-9_]{4,32}$/.test(DON.tg||''))window.open('https://t.me/'+DON.tg,'_blank','noopener')}
-async function redeem(raw){const say=(m,b)=>{pmsg=m;pbad=b?1:0;if($('ov10').classList.contains('on'))renderSet()};
+async function redeem(raw){const say=(m,b)=>{pmsg=m;pbad=b?1:0;if($('ov20').classList.contains('on'))renderDon()};
  try{const m=/^GIFT-([A-Za-z0-9_-]+)\.([A-Za-z0-9_-]+)$/.exec((raw||'').trim());if(!m)return say('Код не похож на промокод',1);
   if(!(window.crypto&&crypto.subtle))return say('Браузер не умеет проверять коды',1);
   const key=await crypto.subtle.importKey('raw',b64d(DON.pub),{name:'ECDSA',namedCurve:'P-256'},false,['verify']);
@@ -726,6 +732,13 @@ function setVol(v){S.vol=Math.max(0,Math.min(100,+v||0));const e=$('vl');if(e)e.
 function setTheme(k){S.theme=k;save();applyTheme();renderSet()}
 document.addEventListener('keydown',e=>{if(tutOn||menuOn||e.target.tagName=='BUTTON'||e.target.tagName=='INPUT')return;if(e.key=='Enter'){if(phase==3)flip();else if(phase==4)start()}});
 Object.values(DEF).forEach(x=>{if(!S.owned.includes(x))S.owned.push(x)});if(!/^[a-z0-9]{4,12}$/.test(S.pid||''))S.pid=Math.random().toString(36).slice(2,8).padEnd(6,'x');if(!Array.isArray(S.used))S.used=[];if(!Array.isArray(S.cg))S.cg=[];if(typeof S.seen!='string')S.seen='';if(!S.tut)S.seen=VER;if(!S.sn||typeof S.sn!='object')S.sn={id:'',sp:0,cl:0};ensureSeason();save();sndLbl();if(!document.documentElement.requestFullscreen)$('fb').style.display='none';applySkins();applyTheme();if(!loadRound())start();menuDraw();pwaInit();
+/* --- запрет любого зума --- */
+['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
+document.addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
+let _lt=0;document.addEventListener('touchend',e=>{const n=Date.now();if(n-_lt<350&&!e.target.closest('button,a,input,textarea,select,label,[onclick]'))e.preventDefault();_lt=n},{passive:false});
+document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
+addEventListener('wheel',e=>{if(e.ctrlKey)e.preventDefault()},{passive:false});
+addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&['+','-','=','0'].includes(e.key))e.preventDefault()});
 </script>
 </body>
 </html>
